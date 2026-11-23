@@ -1,4 +1,6 @@
-from cv2 import cv2
+import time
+
+import cv2
 import numpy as np
 from config import *
 
@@ -10,13 +12,17 @@ class Webcam:
         self.height = None
 
     def loop(self):
-        cond = self.video.isOpened()
-        while cond:
-            cond, image = self.video.read()
-            print(self.convert(image))
-            key = cv2.waitKey(1000 // FPS)
-            if key == STOP_KEY:
-                break
+        try:
+            while self.video.isOpened():
+                cond, image = self.video.read()
+                if not cond:
+                    break
+                print(self.convert(image))
+                time.sleep(1 / FPS)
+        except KeyboardInterrupt:
+            pass
+        finally:
+            self.video.release()
 
     def convert(self, image):
         image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
